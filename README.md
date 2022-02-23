@@ -1,2 +1,1 @@
-# next-shopify-app
- 
+# next-shopify-public-app
