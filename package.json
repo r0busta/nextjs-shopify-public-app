@@ -1,0 +1,8 @@
+{
+    "name": "next-shopify-public-app",
+    "version": "0.0.1",
+    "repository": "https://github.com/r0busta/next-shopify-public-app.git",
+    "author": "Kirill Zhuchkov <643378+r0busta@users.noreply.github.com>",
+    "license": "MIT",
+    "private": false
+}
