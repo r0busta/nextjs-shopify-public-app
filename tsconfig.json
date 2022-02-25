@@ -1,0 +1,12 @@
+{
+    "extends": "@tsconfig/node14/tsconfig.json",
+    "include": ["src"],
+    "exclude": ["node_modules", "./**/dist"],
+    "compilerOptions": {
+        "paths": {
+            "next-shopify-public-app": ["./src/index.ts"]
+        },
+        "declarationMap": true,
+        "declaration": true
+    }
+}

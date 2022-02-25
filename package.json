@@ -4,5 +4,66 @@
     "repository": "https://github.com/r0busta/next-shopify-public-app.git",
     "author": "Kirill Zhuchkov <643378+r0busta@users.noreply.github.com>",
     "license": "MIT",
-    "private": false
+    "private": false,
+    "keywords": [
+        "Next.js",
+        "NestJS",
+        "Shopify",
+        "Shopify Public App"
+    ],
+    "exports": {
+        ".": {
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "files": [
+        "dist/"
+    ],
+    "engines": {
+        "node": ">=14"
+    },
+    "scripts": {
+        "build": "tsup src/index.ts && cp -r asset dist"
+    },
+    "devDependencies": {
+        "@swc/core": "^1.2.145",
+        "@tsconfig/node14": "^1.0.1",
+        "@types/ioredis": "^4.28.8",
+        "tsup": "^5.11.13",
+        "typescript": "^4.5.5"
+    },
+    "dependencies": {
+        "@clerk/clerk-sdk-node": "^2.9.3",
+        "@graphql-tools/graphql-file-loader": "^7.3.4",
+        "@graphql-tools/load": "^7.5.2",
+        "@graphql-tools/utils": "^8.6.2",
+        "@graphql-tools/wrap": "^8.4.2",
+        "@shopify/shopify-api": "^2.1.0",
+        "apollo-server-micro": "^3.6.3",
+        "axios": "^0.26.0",
+        "cross-undici-fetch": "^0.1.25",
+        "graphql": "^16.3.0",
+        "ioredis": "^4.28.5",
+        "micro": "^9.3.4",
+        "next": "^12.1.0"
+    },
+    "tsup": {
+        "splitting": false,
+        "sourcemap": true,
+        "clean": true,
+        "dts": true,
+        "target": "es5",
+        "format": [
+            "esm",
+            "cjs"
+        ],
+        "external": [
+            "next-shopify-public-app"
+        ]
+    }
 }
