@@ -38,6 +38,27 @@ class ShopUsersStorage {
         )
     }
 
+    // #TODO: Optimize this by using a user-to-shop mapping
+    listShops(userId: string): Promise<string[] | undefined> {
+        return this.client.keys(this.key("*")).then(
+            async (v) => {
+                const res = []
+                for (const key of v) {
+                    const { shop } = this.parseKey(key)
+                    const users = await this.list(shop)
+                    if (users && users.includes(userId)) {
+                        res.push(shop)
+                    }
+                }
+                return res
+            },
+            (e) => {
+                console.error(e)
+                return undefined
+            }
+        )
+    }
+
     delete(shop: string): Promise<boolean> {
         return this.client.del(this.key(shop)).then(
             (n) => n === 1,
@@ -60,6 +81,10 @@ class ShopUsersStorage {
 
     private key(shop: string): string {
         return `${this.keyPrefix}.${shop}`
+    }
+
+    private parseKey(key: string): { shop: string } {
+        return { shop: key.split(".").splice(2).join(".") }
     }
 }
 
@@ -167,6 +192,10 @@ class ShopService {
         return currentSession.accessToken
     }
 
+    async listShops(userId: string): Promise<string[] | undefined> {
+        return this.shopUsersStorage.listShops(userId)
+    }
+
     async deleteShop(shop: string): Promise<boolean> {
         const userIds = await this.shopUsersStorage.list(shop)
         if (userIds && userIds.length > 0) {
@@ -210,19 +239,7 @@ export async function saveShopifySessionInfo(
     shopifySessionId: string,
     expires_in: number | undefined
 ) {
-    let userId: string | undefined
-    try {
-        const sessionId = parseJwt(clerkSessionToken)?.sid
-
-        const clerkSession = await clerk.sessions.getSession(sessionId)
-        if (clerkSession.userId) {
-            userId = clerkSession.userId
-        }
-    } catch (e) {
-        console.error(e)
-        throw e
-    }
-
+    const userId = await getUserId(clerkSessionToken)
     if (!userId) {
         throw new Error("Could not find userId")
     }
@@ -244,18 +261,7 @@ export async function getAccessToken(
         return [undefined, undefined, new Error("Unknown shop domain.")]
     }
 
-    let userId: string | undefined
-    try {
-        const sessionId = parseJwt(clerkSessionToken)?.sid
-
-        const clerkSession = await clerk.sessions.getSession(sessionId)
-        if (clerkSession.userId) {
-            userId = clerkSession.userId
-        }
-    } catch (e) {
-        return [undefined, undefined, new Error("Failed to get current session.")]
-    }
-
+    const userId = await getUserId(clerkSessionToken)
     if (!userId) {
         return [undefined, undefined, new Error("Failed to get current user.")]
     }
@@ -268,6 +274,31 @@ export async function getAccessToken(
     return [shop, accessToken, null]
 }
 
+export async function listShops(clerkSessionToken: string): Promise<string[] | undefined> {
+    const userId = await getUserId(clerkSessionToken)
+    if (!userId) {
+        throw new Error("Could not find userId")
+    }
+
+    return getShopService().listShops(userId)
+}
+
 export async function deleteShop(shop: string) {
     return getShopService().deleteShop(shop)
+}
+
+async function getUserId(clerkSessionToken: string): Promise<string | undefined> {
+    let userId: string | undefined
+    try {
+        const sessionId = parseJwt(clerkSessionToken)?.sid
+
+        const clerkSession = await clerk.sessions.getSession(sessionId)
+        if (clerkSession.userId) {
+            userId = clerkSession.userId
+        }
+    } catch (e) {
+        console.error(e)
+        throw e
+    }
+    return userId
 }

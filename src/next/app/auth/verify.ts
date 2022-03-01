@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next/types"
+import { getClerkSessionToken } from "../../../lib/clerk"
 import { getAccessToken } from "../../../lib/storage"
 
 export type TokenResponse = {
@@ -6,7 +7,7 @@ export type TokenResponse = {
 }
 
 export default async function authVerifyHandler(req: NextApiRequest, res: NextApiResponse<TokenResponse>) {
-    const clerkSessionToken = req.cookies["__session"]
+    const clerkSessionToken = getClerkSessionToken(req)
     const shopDomainHeader = req.headers["x-shopify-shop-domain"]
     const [shop, accessToken, err] = await getAccessToken(
         clerkSessionToken,

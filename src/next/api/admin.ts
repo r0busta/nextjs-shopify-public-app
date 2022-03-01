@@ -7,7 +7,7 @@ import { wrapSchema } from "@graphql-tools/wrap"
 import { getAccessToken } from "next-shopify-public-app"
 import { print } from "graphql"
 import path from "path"
-import { fetch } from "cross-undici-fetch"
+import fetch from "node-fetch"
 
 const adminApiVersion = "unstable"
 
