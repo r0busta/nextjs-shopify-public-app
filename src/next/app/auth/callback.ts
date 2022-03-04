@@ -1,12 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next"
 import Shopify, { AuthQuery } from "@shopify/shopify-api"
 import { Session } from "@shopify/shopify-api/dist/auth/session"
-import {
-    saveShopifySessionInfo,
-    registerUninstallWebhook,
-    validateAuthCallback,
-    loadCurrentSession,
-} from "next-shopify-public-app"
+import { validateAuthCallback, loadCurrentSession } from "../../../lib/auth"
+import { saveShopifySessionInfo } from "../../../lib/storage"
+import { registerUninstallWebhook } from "../../../lib/webhook"
 
 async function afterAuth(req: NextApiRequest, res: NextApiResponse, currentSession: Session): Promise<string> {
     const { id, onlineAccessInfo, shop, accessToken } = currentSession
@@ -42,6 +39,12 @@ export default async function authCallbackHandler(req: NextApiRequest, res: Next
             return
         }
 
+        if (!hasScopes(currentSession, (process.env.SCOPES || "").split(","))) {
+            res.writeHead(403)
+            res.end("Unauthorized")
+            return
+        }
+
         console.log("Successfully signed in")
         if (typeof afterAuth === "function") {
             redirectUrl = (await afterAuth(req, res, currentSession)) || redirectUrl
@@ -59,4 +62,13 @@ export default async function authCallbackHandler(req: NextApiRequest, res: Next
             res.end(`Failed to complete OAuth process: ${e.message}`)
         }
     }
+}
+
+function hasScopes(currentSession: Session, scopes: string[]): boolean {
+    if (!currentSession.onlineAccessInfo) {
+        return false
+    }
+
+    const currentScopes = currentSession.onlineAccessInfo.associated_user_scope.split(",")
+    return scopes.every((scope) => currentScopes.includes(scope))
 }

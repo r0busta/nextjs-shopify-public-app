@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next"
 import Shopify from "@shopify/shopify-api"
-import { beginAuth } from "next-shopify-public-app"
+import { beginAuth } from "../../../lib/auth"
 
 export default async function authLoginHandler(req: NextApiRequest, res: NextApiResponse) {
     try {

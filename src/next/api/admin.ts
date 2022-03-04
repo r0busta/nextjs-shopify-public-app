@@ -4,10 +4,10 @@ import { loadSchemaSync } from "@graphql-tools/load"
 import { GraphQLFileLoader } from "@graphql-tools/graphql-file-loader"
 import { AsyncExecutor } from "@graphql-tools/utils"
 import { wrapSchema } from "@graphql-tools/wrap"
-import { getAccessToken } from "next-shopify-public-app"
 import { print } from "graphql"
 import path from "path"
 import fetch from "node-fetch"
+import { getAccessToken } from "../../lib/storage"
 
 const adminApiVersion = "unstable"
 
@@ -36,7 +36,7 @@ const adminExecutor: AsyncExecutor = ({ document, variables, context }) => {
 }
 
 const createServer = () => {
-    const adminSchema = loadSchemaSync(path.join(__dirname, "asset/graphql/shopify/admin/schema.graphqls"), {
+    const adminSchema = loadSchemaSync(path.join(__dirname, "../asset/graphql/shopify/admin/schema.graphqls"), {
         loaders: [new GraphQLFileLoader()],
     })
 

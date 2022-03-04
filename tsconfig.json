@@ -4,7 +4,8 @@
     "exclude": ["node_modules", "./**/dist"],
     "compilerOptions": {
         "paths": {
-            "next-shopify-public-app": ["./src/index.ts"]
+            "next-shopify-public-app": ["./src/lib/index.ts"],
+            "next-shopify-public-app/next": ["./src/next/index.ts"]
         },
         "declarationMap": true,
         "declaration": true
