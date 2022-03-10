@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from "next"
+import { NextApiRequest, NextApiResponse } from "next/types"
 import Shopify from "@shopify/shopify-api"
 import { beginAuth } from "../../../lib/auth"
 

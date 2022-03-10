@@ -1,11 +1,11 @@
-import type { NextApiRequest, NextApiResponse } from "next"
 import Shopify, { AuthQuery } from "@shopify/shopify-api"
 import { Session } from "@shopify/shopify-api/dist/auth/session"
+import { NextApiRequest, NextApiResponse } from "next/types"
 import { validateAuthCallback, loadCurrentSession } from "../../../lib/auth"
 import { saveShopifySessionInfo } from "../../../lib/storage"
 import { registerUninstallWebhook } from "../../../lib/webhook"
 
-async function afterAuth(req: NextApiRequest, res: NextApiResponse, currentSession: Session): Promise<string> {
+async function afterAuth(req: NextApiRequest, _: NextApiResponse, currentSession: Session): Promise<string> {
     const { id, onlineAccessInfo, shop, accessToken } = currentSession
 
     if (!accessToken) {

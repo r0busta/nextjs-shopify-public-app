@@ -1,6 +1,6 @@
 {
     "name": "next-shopify-public-app",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "repository": "https://github.com/r0busta/next-shopify-public-app.git",
     "author": {
         "name": "Kirill Zhuchkov",
@@ -14,37 +14,27 @@
         "Shopify",
         "Shopify Public App"
     ],
-    "exports": {
-        ".": null,
-        "./lib": {
-            "import": "./dist/lib/index.mjs",
-            "require": "./dist/lib/index.js",
-            "types": "./dist/lib/index.d.ts"
-        },
-        "./next": {
-            "import": "./dist/next/index.mjs",
-            "require": "./dist/next/index.js",
-            "types": "./dist/next/index.d.ts"
-        }
-    },
     "files": [
-        "dist"
+        "dist",
+        "lib.d.ts",
+        "lib.js",
+        "next.d.ts",
+        "next.js"
     ],
     "engines": {
         "node": ">=14"
     },
     "scripts": {
-        "build": "tsup src/lib/index.ts -d dist/lib && tsup src/next/index.ts -d dist/next && cp -r asset dist"
+        "build": "rimraf dist && tsc && cp -r asset dist"
     },
     "devDependencies": {
-        "@swc/core": "^1.2.148",
         "@tsconfig/node14": "^1.0.1",
         "@types/ioredis": "^4.28.8",
-        "tsup": "^5.11.13",
+        "rimraf": "^3.0.2",
         "typescript": "^4.6.2"
     },
     "dependencies": {
-        "@clerk/clerk-sdk-node": "^2.9.4",
+        "@clerk/clerk-sdk-node": "^2.9.6",
         "@graphql-tools/graphql-file-loader": "^7.3.4",
         "@graphql-tools/load": "^7.5.2",
         "@graphql-tools/utils": "^8.6.2",
@@ -52,24 +42,10 @@
         "@shopify/shopify-api": "^2.1.0",
         "apollo-server-micro": "^3.6.3",
         "axios": "^0.26.0",
+        "got": "^12.0.1",
         "graphql": "^16.3.0",
         "ioredis": "^4.28.5",
         "micro": "^9.3.4",
-        "next": "^12.1.0",
-        "node-fetch": "^3.2.1"
-    },
-    "tsup": {
-        "splitting": false,
-        "sourcemap": true,
-        "clean": true,
-        "dts": true,
-        "target": "es5",
-        "format": [
-            "esm",
-            "cjs"
-        ],
-        "external": [
-            "next-shopify-public-app"
-        ]
+        "next": "^12.1.0"
     }
 }

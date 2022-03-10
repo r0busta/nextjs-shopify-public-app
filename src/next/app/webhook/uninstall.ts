@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from "next"
+import { NextApiRequest, NextApiResponse } from "next/types"
 import { deleteShop } from "../../../lib/storage"
 
 export default async function webhookUninstallHandler(req: NextApiRequest, res: NextApiResponse) {

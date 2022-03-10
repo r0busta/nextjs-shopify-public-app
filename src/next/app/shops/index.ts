@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from "next"
+import { NextApiRequest, NextApiResponse } from "next/types"
 import { getClerkSessionToken } from "../../../lib/clerk"
 import { listShops } from "../../../lib/storage"
 
