@@ -1,1 +1,1 @@
-module.exports = require("./dist/next")
+export * from "./dist/next"
