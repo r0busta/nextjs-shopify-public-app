@@ -6,8 +6,9 @@ import { AsyncExecutor } from "@graphql-tools/utils"
 import { wrapSchema } from "@graphql-tools/wrap"
 import { print } from "graphql"
 import got from "got"
-import path from "path"
-import { getAccessToken } from "../../lib/storage"
+import path, { dirname } from "path"
+import { getAccessToken } from "../../../lib/storage"
+import { fileURLToPath } from "url"
 
 const adminApiVersion = "unstable"
 
@@ -27,13 +28,13 @@ const adminExecutor: AsyncExecutor = ({ document, variables, context }) => {
                 "X-Shopify-Access-Token": accessToken || "",
             },
             json: { query, variables },
-            // body: JSON.stringify(),
         })
         .json()
 }
 
 const createServer = () => {
-    const adminSchema = loadSchemaSync(path.join(__dirname, "../asset/graphql/shopify/admin/schema.graphqls"), {
+    const __dirname = dirname(fileURLToPath(import.meta.url))
+    const adminSchema = loadSchemaSync(path.join(__dirname, "schema.graphqls"), {
         loaders: [new GraphQLFileLoader()],
     })
 
