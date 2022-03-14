@@ -1,7 +1,7 @@
 {
-    "name": "next-shopify-public-app",
-    "version": "0.0.7",
-    "repository": "https://github.com/r0busta/next-shopify-public-app.git",
+    "name": "nextjs-shopify-public-app",
+    "version": "0.0.1",
+    "repository": "https://github.com/r0busta/nextjs-shopify-public-app.git",
     "author": {
         "name": "Kirill Zhuchkov",
         "email": "643378+r0busta@users.noreply.github.com",
