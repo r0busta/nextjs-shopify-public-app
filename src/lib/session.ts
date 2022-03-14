@@ -1,20 +1,14 @@
 import ioredis from "ioredis"
+import * as redis from "./redis"
 import { Session, SessionStorage } from "@shopify/shopify-api/dist/auth/session"
 import { SessionInterface } from "@shopify/shopify-api"
 
-const host = process.env.UPSTASH_REDIS_ENDPOINT || ""
-const port = process.env.UPSTASH_REDIS_PORT || ""
-const password = process.env.UPSTASH_REDIS_PASSWORD || ""
-
-class RedisSessionStorage implements SessionStorage {
+class ShopifySessionStorage implements SessionStorage {
     private client: ioredis.Redis
     private keyPrefix: string = "Shopify.Session"
 
     constructor() {
-        this.client = new ioredis(`rediss://:${password}@${host}:${port}`)
-        this.client.on("error", function (err) {
-            throw err
-        })
+        this.client = redis.newClient()
     }
 
     storeSession(session: SessionInterface): Promise<boolean> {
@@ -73,4 +67,4 @@ class RedisSessionStorage implements SessionStorage {
     }
 }
 
-export default RedisSessionStorage
+export default ShopifySessionStorage

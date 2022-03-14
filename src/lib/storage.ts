@@ -1,21 +1,15 @@
 import clerk from "@clerk/clerk-sdk-node"
 import ioredis from "ioredis"
+import * as redis from "./redis"
 import { parseJwt } from "./token"
 import getShopify from "./shopify"
-
-const host = process.env.UPSTASH_REDIS_ENDPOINT || ""
-const port = process.env.UPSTASH_REDIS_PORT || ""
-const password = process.env.UPSTASH_REDIS_PASSWORD || ""
 
 class ShopUsersStorage {
     private client: ioredis.Redis
     private keyPrefix: string = "User.Shops"
 
     constructor() {
-        this.client = new ioredis(`rediss://:${password}@${host}:${port}`)
-        this.client.on("error", (err) => {
-            throw err
-        })
+        this.client = redis.newClient()
     }
 
     async add(shop: string, userId: string): Promise<boolean> {
@@ -93,10 +87,7 @@ class ShopSessionStorage {
     private keyPrefix: string = "User.ShopSessions"
 
     constructor() {
-        this.client = new ioredis(`rediss://:${password}@${host}:${port}`)
-        this.client.on("error", (err) => {
-            throw err
-        })
+        this.client = redis.newClient()
     }
 
     add(userId: string, shop: string, sessionId: string, expires_in: number): Promise<boolean> {
