@@ -1,5 +1,6 @@
-import Clerk from "@clerk/clerk-sdk-node/instance"
 import { NextApiRequest } from "next/types"
+
+const Clerk = require("@clerk/clerk-sdk-node/instance").default
 
 export function newClient() {
     return new Clerk({ apiKey: process.env.CLERK_API_KEY || "" })
