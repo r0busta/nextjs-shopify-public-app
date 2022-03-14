@@ -34,12 +34,14 @@ export default async function authCallbackHandler(req: NextApiRequest, res: Next
 
         const currentSession = await loadCurrentSession(req, res)
         if (typeof currentSession === "undefined") {
+            console.error("Couldn't load current session")
             res.writeHead(500)
             res.end("Failed to load current session.")
             return
         }
 
         if (!hasScopes(currentSession, (process.env.SCOPES || "").split(","))) {
+            console.error(`User ${currentSession.id} doesn't have the required scopes.`)
             res.writeHead(403)
             res.end("Unauthorized")
             return
@@ -69,6 +71,6 @@ function hasScopes(currentSession: Session, scopes: string[]): boolean {
         return false
     }
 
-    const currentScopes = currentSession.onlineAccessInfo.associated_user_scope.split(",")
-    return scopes.every((scope) => currentScopes.includes(scope))
+    const userScopes = currentSession.onlineAccessInfo.associated_user_scope.split(",")
+    return userScopes.every((scope) => scopes.includes(scope))
 }
