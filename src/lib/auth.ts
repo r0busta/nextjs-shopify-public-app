@@ -2,8 +2,8 @@ import http from "http"
 import { AuthQuery } from "@shopify/shopify-api"
 import getShopify from "./shopify"
 
-export function beginAuth(req: http.IncomingMessage, res: http.ServerResponse, shop: string, redirectPath: string) {
-    return getShopify().Auth.beginAuth(req, res, shop, redirectPath, true)
+export function beginAuth(req: http.IncomingMessage, res: http.ServerResponse, store: string, redirectPath: string) {
+    return getShopify().Auth.beginAuth(req, res, store, redirectPath, true)
 }
 
 export function validateAuthCallback(req: http.IncomingMessage, res: http.ServerResponse, query: AuthQuery) {

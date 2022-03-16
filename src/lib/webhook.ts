@@ -11,11 +11,11 @@ enum ShopifyHeader {
 const uninstallTopic = "APP_UNINSTALLED"
 const uninstallPath = "/api/shopify/webhook/uninstall"
 
-export async function registerUninstallWebhook(shop: string, accessToken: string) {
+export async function registerUninstallWebhook(store: string, accessToken: string) {
     const res = await getShopify().Webhooks.Registry.register({
         topic: uninstallTopic,
         path: uninstallPath,
-        shop,
+        shop: store,
         accessToken,
     })
 

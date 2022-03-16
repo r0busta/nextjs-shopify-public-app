@@ -6,7 +6,7 @@ import { saveShopifySessionInfo } from "../../../lib/storage"
 import { registerUninstallWebhook } from "../../../lib/webhook"
 
 async function afterAuth(req: NextApiRequest, _: NextApiResponse, currentSession: Session): Promise<string> {
-    const { id, onlineAccessInfo, shop, accessToken } = currentSession
+    const { id, onlineAccessInfo, shop: store, accessToken } = currentSession
 
     if (!accessToken) {
         throw new Error("No access token")
@@ -14,13 +14,13 @@ async function afterAuth(req: NextApiRequest, _: NextApiResponse, currentSession
 
     try {
         const clerkSessionToken = req.cookies["__session"]
-        await saveShopifySessionInfo(clerkSessionToken, shop, id, onlineAccessInfo?.expires_in)
+        await saveShopifySessionInfo(clerkSessionToken, store, id, onlineAccessInfo?.expires_in)
     } catch (e) {
-        console.error(`Couldn't save shop info: ${e}`)
+        console.error(`Couldn't save store info: ${e}`)
         throw e
     }
 
-    await registerUninstallWebhook(shop, accessToken)
+    await registerUninstallWebhook(store, accessToken)
 
     return "/shopify/auth/success"
 }

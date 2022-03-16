@@ -17,11 +17,11 @@ const adminExecutor: AsyncExecutor = ({ document, variables, context }) => {
         throw new Error("No context")
     }
 
-    const { shop, accessToken } = context
+    const { store, accessToken } = context
 
     const query = print(document)
     return got
-        .post(`https://${shop}/admin/api/${adminApiVersion}/graphql.json`, {
+        .post(`https://${store}/admin/api/${adminApiVersion}/graphql.json`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -48,18 +48,18 @@ const createServer = () => {
         schema,
         context: async ({ req }) => {
             const clerkSessionToken = req.cookies["__session"]
-            const shopDomainHeader = req.headers["x-shopify-shop-domain"]
-            const [shop, accessToken, err] = await getAccessToken(
+            const storeDomainHeader = req.headers["x-shopify-store-domain"]
+            const [store, accessToken, err] = await getAccessToken(
                 clerkSessionToken,
-                (Array.isArray(shopDomainHeader) ? shopDomainHeader[0] : shopDomainHeader) || ""
+                (Array.isArray(storeDomainHeader) ? storeDomainHeader[0] : storeDomainHeader) || ""
             )
 
-            if (err || !shop || !accessToken) {
+            if (err || !store || !accessToken) {
                 console.error(err)
                 throw new AuthenticationError("Not authenticated")
             }
 
-            return { shop, accessToken }
+            return { store, accessToken }
         },
     })
 }
