@@ -8,13 +8,13 @@ export type TokenResponse = {
 
 export default async function authVerifyHandler(req: NextApiRequest, res: NextApiResponse<TokenResponse>) {
     const clerkSessionToken = getClerkSessionToken(req)
-    const shopDomainHeader = req.headers["x-shopify-shop-domain"]
-    const [shop, accessToken, err] = await getAccessToken(
+    const storeDomainHeader = req.headers["x-shopify-store-domain"]
+    const [store, accessToken, err] = await getAccessToken(
         clerkSessionToken,
-        (Array.isArray(shopDomainHeader) ? shopDomainHeader[0] : shopDomainHeader) || ""
+        (Array.isArray(storeDomainHeader) ? storeDomainHeader[0] : storeDomainHeader) || ""
     )
 
-    if (err || !shop || !accessToken) {
+    if (err || !store || !accessToken) {
         console.error(err)
         res.status(401).json({ success: false })
         return

@@ -1,15 +1,15 @@
 import { NextApiRequest, NextApiResponse } from "next/types"
-import { deleteShop } from "../../../lib/storage"
+import { deleteStore } from "../../../lib/storage"
 
 export default async function webhookUninstallHandler(req: NextApiRequest, res: NextApiResponse) {
-    const shopDomainHeader = req.headers["x-shopify-shop-domain"]
-    const shop = (Array.isArray(shopDomainHeader) ? shopDomainHeader[0] : shopDomainHeader) || ""
+    const storeDomainHeader = req.headers["x-shopify-store-domain"]
+    const store = (Array.isArray(storeDomainHeader) ? storeDomainHeader[0] : storeDomainHeader) || ""
 
-    console.log(`Deleting shop ${shop}`)
+    console.log(`Deleting store ${store}`)
 
-    const ok = await deleteShop(shop)
+    const ok = await deleteStore(store)
     if (!ok) {
-        console.error(`Failed to delete shop ${shop}`)
+        console.error(`Failed to delete store ${store}`)
     }
 
     res.status(200).end()
