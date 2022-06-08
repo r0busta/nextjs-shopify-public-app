@@ -1,10 +1,10 @@
-import ioredis from "ioredis"
+import Redis from "ioredis"
 import * as redis from "./redis"
 import { Session, SessionStorage } from "@shopify/shopify-api/dist/auth/session"
 import { SessionInterface } from "@shopify/shopify-api"
 
 class ShopifySessionStorage implements SessionStorage {
-    private client: ioredis.Redis
+    private client: Redis
     private keyPrefix: string = "Shopify.Session"
 
     constructor() {

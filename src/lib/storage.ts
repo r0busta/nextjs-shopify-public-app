@@ -1,11 +1,11 @@
-import ioredis from "ioredis"
+import Redis from "ioredis"
 import * as redis from "./redis"
 import * as clerk from "./clerk"
 import { parseJwt } from "./token"
 import getShopify from "./shopify"
 
 class StoreUsersStorage {
-    private client: ioredis.Redis
+    private client: Redis
     private keyPrefix: string = "User.Stores"
 
     constructor() {
@@ -83,7 +83,7 @@ class StoreUsersStorage {
 }
 
 class StoreSessionStorage {
-    private client: ioredis.Redis
+    private client: Redis
     private keyPrefix: string = "User.StoreSessions"
 
     constructor() {
