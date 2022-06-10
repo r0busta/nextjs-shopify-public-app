@@ -265,10 +265,9 @@ export async function getAccessToken(
     return [store, accessToken, null]
 }
 
-export async function listStores(clerkSessionToken: string): Promise<string[] | undefined> {
-    const userId = await getUserId(clerkSessionToken)
+export async function listStores(userId: string): Promise<string[] | undefined> {
     if (!userId) {
-        throw new Error("Could not find userId")
+        throw new Error("userId should be set")
     }
 
     return getStoreService().listStores(userId)
