@@ -1,20 +1,23 @@
 import { NextApiRequest, NextApiResponse } from "next/types"
-import Shopify from "@shopify/shopify-api"
-import { beginAuth } from "../../../lib/auth"
+import { getSessionStorage } from "../../../lib/session"
+import { ShopifyOAuth } from "../../../shopify/oauth"
 
 export default async function authLoginHandler(req: NextApiRequest, res: NextApiResponse) {
     try {
         const { store } = req.query
-        const authRoute = await beginAuth(req, res, store as string, "/api/shopify/auth/callback")
+        const oauth = new ShopifyOAuth(
+            getSessionStorage(),
+            process.env.HOST,
+            process.env.API_KEY,
+            process.env.API_SECRET_KEY,
+            process.env.SCOPES
+        )
+        const authRoute = await oauth.beginAuth(req, res, store as string, "/api/shopify/auth/callback")
         res.redirect(authRoute)
     } catch (e: any) {
         console.error(e)
 
         res.writeHead(500)
-        if (e instanceof Shopify.Errors.ShopifyError) {
-            res.end(e.message)
-        } else {
-            res.end(`Failed to complete OAuth process: ${e.message}`)
-        }
+        res.end(`Failed to complete OAuth process: ${e.message}`)
     }
 }

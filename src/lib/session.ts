@@ -1,7 +1,6 @@
 import Redis from "ioredis"
+import { SessionStorage, SessionInterface, Session } from "../shopify/session"
 import * as redis from "./redis"
-import { Session, SessionStorage } from "@shopify/shopify-api/dist/auth/session"
-import { SessionInterface } from "@shopify/shopify-api"
 
 class ShopifySessionStorage implements SessionStorage {
     private client: Redis
@@ -67,4 +66,13 @@ class ShopifySessionStorage implements SessionStorage {
     }
 }
 
-export default ShopifySessionStorage
+let _sessionStorage: ShopifySessionStorage
+export function getSessionStorage() {
+    if (!_sessionStorage) {
+        _sessionStorage = new ShopifySessionStorage()
+    }
+
+    return _sessionStorage
+}
+
+// export default ShopifySessionStorage

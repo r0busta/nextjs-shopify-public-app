@@ -2,7 +2,7 @@ import Redis from "ioredis"
 import * as redis from "./redis"
 import * as clerk from "./clerk"
 import { parseJwt } from "./token"
-import getShopify from "./shopify"
+import { getSessionStorage } from "./session"
 
 class StoreUsersStorage {
     private client: Redis
@@ -174,7 +174,7 @@ class StoreService {
             return undefined
         }
 
-        const currentSession = await getShopify().Context.SESSION_STORAGE.loadSession(sessionId)
+        const currentSession = await getSessionStorage().loadSession(sessionId)
         if (!currentSession || !currentSession.expires || currentSession.expires.getTime() < Date.now()) {
             console.error("No Shopify session found or session expired for user ${userId} and store ${store}")
             return undefined
@@ -194,7 +194,7 @@ class StoreService {
 
             if (sessionIds && sessionIds.length > 0) {
                 for (const sessionId of sessionIds) {
-                    await getShopify().Context.SESSION_STORAGE.deleteSession(sessionId)
+                    await getSessionStorage().deleteSession(sessionId)
                 }
             }
 

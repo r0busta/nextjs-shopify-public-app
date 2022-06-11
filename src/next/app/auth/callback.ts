@@ -1,9 +1,10 @@
-import Shopify, { AuthQuery } from "@shopify/shopify-api"
-import { Session } from "@shopify/shopify-api/dist/auth/session"
 import { NextApiRequest, NextApiResponse } from "next/types"
-import { validateAuthCallback, loadCurrentSession } from "../../../lib/auth"
 import { saveShopifySessionInfo } from "../../../lib/storage"
+import { getSessionStorage } from "../../../lib/session"
 import { registerUninstallWebhook } from "../../../lib/webhook"
+import { Session } from "../../../shopify/session"
+import { ShopifyOAuth } from "../../../shopify/oauth"
+import { AuthQuery } from "../../../shopify/auth"
 
 async function afterAuth(req: NextApiRequest, _: NextApiResponse, currentSession: Session): Promise<string> {
     const { id, onlineAccessInfo, shop: store, accessToken } = currentSession
@@ -29,10 +30,18 @@ export default async function authCallbackHandler(req: NextApiRequest, res: Next
     let redirectUrl = `/?host=${req.query.host}`
 
     try {
-        const query: AuthQuery = req.query as unknown as AuthQuery
-        await validateAuthCallback(req, res, query)
+        const oauth = new ShopifyOAuth(
+            getSessionStorage(),
+            process.env.HOST,
+            process.env.API_KEY,
+            process.env.API_SECRET_KEY,
+            process.env.SCOPES
+        )
 
-        const currentSession = await loadCurrentSession(req, res)
+        const query: AuthQuery = req.query as unknown as AuthQuery
+        await oauth.validateAuthCallback(req, res, query)
+
+        const currentSession = await oauth.loadCurrentSession(req, res)
         if (typeof currentSession === "undefined") {
             console.error("Couldn't load current session")
             res.writeHead(500)
@@ -58,11 +67,7 @@ export default async function authCallbackHandler(req: NextApiRequest, res: Next
         console.error(e)
 
         res.writeHead(500)
-        if (e instanceof Shopify.Errors.ShopifyError) {
-            res.end(e.message)
-        } else {
-            res.end(`Failed to complete OAuth process: ${e.message}`)
-        }
+        res.end(`Failed to complete OAuth process: ${e.message}`)
     }
 }
 
