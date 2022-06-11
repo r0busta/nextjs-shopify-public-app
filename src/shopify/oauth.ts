@@ -91,7 +91,7 @@ export class ShopifyOAuth {
             throw new Error(`Cannot complete OAuth process. No session found for the specified shop url: ${query.shop}`)
         }
 
-        if (!ShopifyOAuth.isValidQuery(query, currentSession)) {
+        if (!this.isQueryValid(query, currentSession)) {
             throw new Error("Invalid OAuth callback.")
         }
 
@@ -132,8 +132,8 @@ export class ShopifyOAuth {
         return currentSession
     }
 
-    static isValidQuery(query: AuthQuery, session: Session): boolean {
-        return validateHmac(query) && safeCompare(query.state, session.state as string)
+    isQueryValid(query: AuthQuery, session: Session): boolean {
+        return validateHmac(this.API_SECRET_KEY, query) && safeCompare(query.state, session.state as string)
     }
 
     getCookieSessionId(request: http.IncomingMessage, response: http.ServerResponse): string | undefined {

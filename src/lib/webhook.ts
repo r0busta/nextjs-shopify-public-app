@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next/types"
 import { processWebhook, register } from "../shopify/webhook"
 
-const uninstallTopic = "APP_UNINSTALLED"
+const uninstallTopic = "app/uninstalled"
 const uninstallPath = "/api/shopify/webhook/uninstall"
 
 export async function registerUninstallWebhook(store: string, accessToken: string) {
@@ -15,7 +15,7 @@ export async function registerUninstallWebhook(store: string, accessToken: strin
     })
 
     if (!res[uninstallTopic].success) {
-        console.error(`Failed to register ${uninstallTopic} webhook: ${res[uninstallTopic].result}`)
+        console.error(`Failed to register ${uninstallTopic} webhook: ${JSON.stringify(res[uninstallTopic].result)}`)
     } else {
         console.log(`${uninstallTopic} webhook was successfully registered`)
     }
@@ -28,16 +28,18 @@ function isWebhookPath(path: string) {
 export function requireWebhookPath(handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void>) {
     return async (req: NextApiRequest, res: NextApiResponse) => {
         if (!isWebhookPath(req.url || "")) {
-            res.writeHead(404).end()
+            console.error(`requireWebhookPath: ${req.method} ${req.url} is not a webhook path`)
+            res.writeHead(400).end()
             return
         }
 
         const err = await processWebhook(req, res)
         if (err) {
             console.error(err)
-            res.end()
+            res.writeHead(500).end()
             return
         }
+
         return handler(req, res)
     }
 }

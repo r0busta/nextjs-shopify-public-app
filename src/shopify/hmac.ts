@@ -26,8 +26,7 @@ export function safeCompare(
     return false
 }
 
-export function generateLocalHmac({ code, timestamp, state, shop, host }: AuthQuery): string {
-    const API_SECRET_KEY = process.env.SHOPIFY_APP_API_SECRET_KEY || ""
+export function generateLocalHmac(secretKey: string, { code, timestamp, state, shop, host }: AuthQuery): string {
     const queryString = stringifyQuery({
         code,
         timestamp,
@@ -35,7 +34,7 @@ export function generateLocalHmac({ code, timestamp, state, shop, host }: AuthQu
         shop,
         ...(host && { host }),
     })
-    return createHmac("sha256", API_SECRET_KEY).update(queryString).digest("hex")
+    return createHmac("sha256", secretKey).update(queryString).digest("hex")
 }
 
 /**
@@ -43,11 +42,11 @@ export function generateLocalHmac({ code, timestamp, state, shop, host }: AuthQu
  *
  * @param query HTTP Request Query, containing the information to be validated.
  */
-export default function validateHmac(query: AuthQuery): boolean {
+export default function validateHmac(secretKey: string, query: AuthQuery): boolean {
     if (!query.hmac) {
         throw new Error("Query does not contain an HMAC value.")
     }
     const { hmac } = query
-    const localHmac = generateLocalHmac(query)
+    const localHmac = generateLocalHmac(secretKey, query)
     return safeCompare(hmac as string, localHmac)
 }

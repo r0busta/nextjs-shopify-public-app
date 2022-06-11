@@ -5,7 +5,7 @@ import { GraphQLFileLoader } from "@graphql-tools/graphql-file-loader"
 import { AsyncExecutor } from "@graphql-tools/utils"
 import { wrapSchema } from "@graphql-tools/wrap"
 import { print } from "graphql"
-import got from "got"
+import fetch from "node-fetch"
 import path, { dirname } from "path"
 import { getAccessToken } from "../../../lib/storage"
 import { fileURLToPath } from "url"
@@ -20,16 +20,14 @@ const adminExecutor: AsyncExecutor = ({ document, variables, context }) => {
     const { store, accessToken } = context
 
     const query = print(document)
-    return got
-        .post(`https://${store}/admin/api/${adminApiVersion}/graphql.json`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-Shopify-Access-Token": accessToken || "",
-            },
-            json: { query, variables },
-        })
-        .json()
+    return fetch(`https://${store}/admin/api/${adminApiVersion}/graphql.json`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-Shopify-Access-Token": accessToken || "",
+        },
+        body: JSON.stringify({ query, variables }),
+    }).then((r) => r.json())
 }
 
 const createServer = () => {

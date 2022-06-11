@@ -51,12 +51,24 @@ export async function register(
                     address,
                 },
             }),
-        }).then((r) => r.json())
+        })
+
+        const data = await res.json()
+
+        if (res.status !== 201) {
+            const registerReturn: RegisterReturn = {
+                [topic]: {
+                    success: false,
+                    result: data,
+                },
+            }
+            return registerReturn
+        }
 
         const registerReturn: RegisterReturn = {
             [topic]: {
                 success: true,
-                result: res,
+                result: data,
             },
         }
         return registerReturn
@@ -72,13 +84,16 @@ export async function register(
 }
 
 export async function processWebhook(req: IncomingMessage, res: ServerResponse): Promise<Error | undefined> {
-    const buffers = []
+    let reqBody = ""
+    await new Promise((resolve) => {
+        req.on("data", (chunk) => {
+            reqBody += chunk
+        })
 
-    for await (const chunk of req) {
-        buffers.push(chunk)
-    }
-
-    const reqBody = Buffer.concat(buffers).toString()
+        req.on("end", () => {
+            resolve(undefined)
+        })
+    })
 
     if (!reqBody.length) {
         res.writeHead(400)

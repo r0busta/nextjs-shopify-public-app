@@ -33,8 +33,8 @@ export default async function authCallbackHandler(req: NextApiRequest, res: Next
         const oauth = new ShopifyOAuth(
             getSessionStorage(),
             process.env.HOST,
-            process.env.API_KEY,
-            process.env.API_SECRET_KEY,
+            process.env.SHOPIFY_APP_API_KEY,
+            process.env.SHOPIFY_APP_API_SECRET_KEY,
             process.env.SCOPES
         )
 

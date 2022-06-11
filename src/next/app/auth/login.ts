@@ -8,8 +8,8 @@ export default async function authLoginHandler(req: NextApiRequest, res: NextApi
         const oauth = new ShopifyOAuth(
             getSessionStorage(),
             process.env.HOST,
-            process.env.API_KEY,
-            process.env.API_SECRET_KEY,
+            process.env.SHOPIFY_APP_API_KEY,
+            process.env.SHOPIFY_APP_API_SECRET_KEY,
             process.env.SCOPES
         )
         const authRoute = await oauth.beginAuth(req, res, store as string, "/api/shopify/auth/callback")

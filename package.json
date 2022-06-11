@@ -54,7 +54,6 @@
         "@graphql-tools/wrap": "^8.4.20",
         "apollo-server-micro": "^3.8.2",
         "cookies": "^0.8.0",
-        "got": "^12.1.0",
         "graphql": "^16.5.0",
         "ioredis": "^5.0.6",
         "micro": "^9.3.4",

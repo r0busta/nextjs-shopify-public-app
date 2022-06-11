@@ -82,10 +82,9 @@ describe("validateAuthCallback", () => {
     })
     it("should validate an auth callback", async () => {
         const shop = "my-store.myshopify.com"
+        const secretKey = "my-api-secret-key"
         const sessionStorage = new InMemorySessionStorage()
-        const oauth = new ShopifyOAuth(sessionStorage, "my-app.com", "my-api-key", "my-api-secret-key", [
-            "read_products",
-        ])
+        const oauth = new ShopifyOAuth(sessionStorage, "my-app.com", "my-api-key", secretKey, ["read_products"])
         const server = http.createServer(async (req, res) => {
             const u = new URL(req.url || "", "http://localhost:3000")
             const q = new URLSearchParams(u.search)
@@ -122,7 +121,7 @@ describe("validateAuthCallback", () => {
             timestamp: Number(new Date()).toString(),
             code: "some random auth code",
         }
-        const expectedHmac = generateLocalHmac(query)
+        const expectedHmac = generateLocalHmac(secretKey, query)
         query.hmac = expectedHmac
 
         expect((await fetch(`http://localhost:3000?${stringifyQuery(query)}`)).status).toBe(200)
