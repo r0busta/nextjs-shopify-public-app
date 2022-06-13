@@ -2,11 +2,11 @@ import { NextApiRequest, NextApiResponse } from "next/types"
 import { saveShopifySessionInfo } from "../../../lib/storage"
 import { getSessionStorage } from "../../../lib/session"
 import { registerUninstallWebhook } from "../../../lib/webhook"
-import { Session } from "../../../shopify/session"
+import { Session as ShopifySession } from "../../../shopify/session"
 import { ShopifyOAuth } from "../../../shopify/oauth"
 import { AuthQuery } from "../../../shopify/auth"
 
-async function afterAuth(req: NextApiRequest, _: NextApiResponse, currentSession: Session): Promise<string> {
+async function afterAuth(req: NextApiRequest, _: NextApiResponse, currentSession: ShopifySession): Promise<string> {
     const { id, onlineAccessInfo, shop: store, accessToken } = currentSession
 
     if (!accessToken) {
@@ -71,7 +71,7 @@ export default async function authCallbackHandler(req: NextApiRequest, res: Next
     }
 }
 
-function hasScopes(currentSession: Session, scopes: string[]): boolean {
+function hasScopes(currentSession: ShopifySession, scopes: string[]): boolean {
     if (!currentSession.onlineAccessInfo) {
         return false
     }

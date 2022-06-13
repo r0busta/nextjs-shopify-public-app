@@ -25,6 +25,7 @@ export function requireAppRoutes(): NextApiHandler {
                     return listStoresHandler(req, res)
                 } else {
                     res.status(405).end()
+                    return
                 }
         }
 

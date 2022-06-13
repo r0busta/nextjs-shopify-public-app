@@ -1115,7 +1115,14 @@
   resolved "https://registry.npmjs.org/@types/http-cache-semantics/-/http-cache-semantics-4.0.1.tgz"
   integrity sha512-SZs7ekbP8CN0txVG2xVRH6EgKmEm31BOxA07vkFaETzZz1xh+cbt8BcI0slpymvwhx5dlFnQG2rTlPVQn+iRPQ==
 
-"@types/ioredis@^4.28.10":
+"@types/ioredis-mock@^5.6.0":
+  version "5.6.0"
+  resolved "https://registry.yarnpkg.com/@types/ioredis-mock/-/ioredis-mock-5.6.0.tgz#78078fedf8323c94234abba0a6b2f10ecbdcb0fe"
+  integrity sha512-2L20NMYTzNlCeLbi7aXQ/VlFTBu7qYoGefwB0NIDYN5TWzOslzvfl7ttoIN9IVO2LEeY+MBpSWO8oJQklL/o4Q==
+  dependencies:
+    "@types/ioredis" "*"
+
+"@types/ioredis@*", "@types/ioredis@^4.28.10":
   version "4.28.10"
   resolved "https://registry.npmjs.org/@types/ioredis/-/ioredis-4.28.10.tgz"
   integrity sha512-69LyhUgrXdgcNDv7ogs1qXZomnfOEnSmrmMFqKgt1XMJxmoOSG/u3wYy13yACIfKuMJ8IhKgHafDO3sx19zVQQ==

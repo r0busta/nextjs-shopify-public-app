@@ -1,9 +1,10 @@
 import { NextApiRequest } from "next/types"
+import { setClerkApiKey, sessions as clerkSessions } from "@clerk/clerk-sdk-node"
 
-const Clerk = require("@clerk/clerk-sdk-node/instance").default
+setClerkApiKey(process.env.CLERK_API_KEY || "")
 
-export function newClient() {
-    return new Clerk({ apiKey: process.env.CLERK_API_KEY || "" })
+export function sessionsApi() {
+    return clerkSessions
 }
 
 export function getClerkSessionToken(req: NextApiRequest) {

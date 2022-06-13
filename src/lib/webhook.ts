@@ -33,6 +33,7 @@ export function requireWebhookPath(handler: (req: NextApiRequest, res: NextApiRe
             return
         }
 
+        console.log(`requireWebhookPath: ${req.method} ${req.url}`)
         const err = await processWebhook(req, res)
         if (err) {
             console.error(err)

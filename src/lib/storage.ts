@@ -1,6 +1,6 @@
 import Redis from "ioredis"
 import * as redis from "./redis"
-import * as clerk from "./clerk"
+import { sessionsApi as clerkSessionsApi } from "./clerk"
 import { parseJwt } from "./token"
 import { getSessionStorage } from "./session"
 
@@ -282,7 +282,7 @@ async function getUserId(clerkSessionToken: string): Promise<string | undefined>
     try {
         const sessionId = parseJwt(clerkSessionToken)?.sid
 
-        const clerkSession = await clerk.newClient().sessions.getSession(sessionId)
+        const clerkSession = await clerkSessionsApi().getSession(sessionId)
         if (clerkSession.userId) {
             userId = clerkSession.userId
         }
