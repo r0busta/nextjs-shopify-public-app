@@ -56,6 +56,7 @@ export async function register(
         const data = await res.json()
 
         if (res.status !== 201) {
+            console.error(`Failed to register webhook: ${JSON.stringify(data)}`)
             const registerReturn: RegisterReturn = {
                 [topic]: {
                     success: false,
@@ -73,6 +74,7 @@ export async function register(
         }
         return registerReturn
     } catch (e) {
+        console.error(e)
         const registerReturn: RegisterReturn = {
             [topic]: {
                 success: false,

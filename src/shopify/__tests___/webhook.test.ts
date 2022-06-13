@@ -5,7 +5,7 @@ describe("register", () => {
     it("should register webhook", async () => {
         const shop = "my-store.myshopify.com"
 
-        nock(`https://${shop}`).post("/admin/api/2022-07/webhooks.json").reply(200, {
+        nock(`https://${shop}`).post("/admin/api/2022-07/webhooks.json").reply(201, {
             webhook: {},
         })
 
