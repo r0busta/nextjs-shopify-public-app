@@ -1,34 +1,36 @@
 import { NextApiRequest, NextApiResponse } from "next/types"
 import fetch from "node-fetch"
-import http from "http"
+import { createServer, listen, close } from "src/test/http/server"
 import { requireWebhookPath } from "src/lib/webhook"
 
 describe("requireWebhookPath", () => {
     it("should reject incorrect handler endpoints", async () => {
-        const server = http.createServer((req, res) =>
+        const server = createServer((req, res) =>
             requireWebhookPath(async (_1, _2) => undefined)(
                 req as unknown as NextApiRequest,
                 res as unknown as NextApiResponse
             )
         )
-        server.listen(3000)
 
-        expect((await fetch("http://localhost:3000/")).status).toBe(404)
-        server.close()
+        const host = await listen(server)
+
+        expect((await fetch(host)).status).toBe(404)
+
+        await close(server)
     })
 
     it("should reject unsigned webhooks", async () => {
-        const server = http.createServer((req, res) =>
+        const server = createServer((req, res) =>
             requireWebhookPath(async (_1, _2) => undefined)(
                 req as unknown as NextApiRequest,
                 res as unknown as NextApiResponse
             )
         )
-        server.listen(3000)
+        const host = await listen(server)
 
         expect(
             (
-                await fetch("http://localhost:3000/api/shopify/webhook/uninstall", {
+                await fetch(`${host}/api/shopify/webhook/uninstall`, {
                     method: "POST",
                     headers: {
                         "X-Shopify-Hmac-Sha256": "42",
@@ -39,6 +41,7 @@ describe("requireWebhookPath", () => {
                 })
             ).status
         ).toBe(403)
-        server.close()
+
+        await close(server)
     })
 })

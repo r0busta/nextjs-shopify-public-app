@@ -2,6 +2,7 @@ import http from "http"
 import fetch from "node-fetch"
 import nock from "nock"
 import Cookies from "cookies"
+import { createServer, listen, close, } from "src/test/http/server"
 import { AuthQuery, stringifyQuery } from "../auth"
 import { generateLocalHmac } from "../hmac"
 import { ShopifyOAuth } from "../oauth"
@@ -32,7 +33,7 @@ describe("getShopifyAuthURL", () => {
         const oauth = new ShopifyOAuth(new InMemorySessionStorage(), "my-app.com", "my-api-key", "my-api-secret-key", [
             "read_products",
         ])
-        const server = http.createServer(async (req, res) => {
+        const server = createServer(async (req, res) => {
             const store = "my-store.myshopify.com"
             const redirectPath = "/localhost/app"
             const authURL = await oauth.beginAuth(req, res, store, redirectPath)
@@ -49,10 +50,11 @@ describe("getShopifyAuthURL", () => {
             res.end()
             return
         })
-        server.listen(3000)
+        const host = await listen(server)
 
-        expect((await fetch("http://localhost:3000/")).status).toBe(200)
-        server.close()
+        expect((await fetch(host)).status).toBe(200)
+
+        await close(server)
     })
 })
 
@@ -85,8 +87,8 @@ describe("validateAuthCallback", () => {
         const secretKey = "my-api-secret-key"
         const sessionStorage = new InMemorySessionStorage()
         const oauth = new ShopifyOAuth(sessionStorage, "my-app.com", "my-api-key", secretKey, ["read_products"])
-        const server = http.createServer(async (req, res) => {
-            const u = new URL(req.url || "", "http://localhost:3000")
+        const server = createServer(async (req, res) => {
+            const u = new URL(req.url || "", host)
             const q = new URLSearchParams(u.search)
 
             let query: AuthQuery = {} as AuthQuery
@@ -108,7 +110,7 @@ describe("validateAuthCallback", () => {
             res.writeHead(200).end()
             return
         })
-        server.listen(3000)
+        const host = await listen(server)
 
         let req: http.IncomingMessage = {} as http.IncomingMessage
         let res: http.ServerResponse = {} as http.ServerResponse
@@ -124,7 +126,8 @@ describe("validateAuthCallback", () => {
         const expectedHmac = generateLocalHmac(secretKey, query)
         query.hmac = expectedHmac
 
-        expect((await fetch(`http://localhost:3000?${stringifyQuery(query)}`)).status).toBe(200)
-        server.close()
+        expect((await fetch(`${host}?${stringifyQuery(query)}`)).status).toBe(200)
+
+        await close(server)
     })
 })

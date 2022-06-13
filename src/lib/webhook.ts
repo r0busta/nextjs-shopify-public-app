@@ -29,7 +29,7 @@ export function requireWebhookPath(handler: (req: NextApiRequest, res: NextApiRe
     return async (req: NextApiRequest, res: NextApiResponse) => {
         if (!isWebhookPath(req.url || "")) {
             console.error(`requireWebhookPath: ${req.method} ${req.url} is not a webhook path`)
-            res.writeHead(400).end()
+            res.writeHead(404).end()
             return
         }
 
