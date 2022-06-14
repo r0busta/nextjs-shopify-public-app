@@ -1,8 +1,7 @@
-import { deleteStore, listStores, saveShopifySessionInfo } from "src/lib/storage"
+import { deleteStore, listStores } from "src/lib/storage"
+import { addStore } from "src/test/storage/store"
 
-import { Session, sessions as clerkSessions } from "@clerk/clerk-sdk-node"
 jest.mock("@clerk/clerk-sdk-node")
-const mockedClerkSessions = clerkSessions as jest.Mocked<typeof clerkSessions>
 
 const Redis = require("ioredis-mock")
 jest.mock("ioredis", () => require("ioredis-mock"))
@@ -14,16 +13,9 @@ beforeEach(async () => {
 describe("saveShopifySessionInfo", () => {
     it("should save session info", async () => {
         const userId = "my-clerk-user-id"
-
-        const clerkSessionToken =
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2lkIjoibXktc2lkIiwiaWF0IjoxNTE2MjM5MDIyfQ.ol3RnXn0g_D1S9X-SeKM1VjStUU7vKzY2d0buYdtK_0"
         const store = "my-store.example.com"
-        const shopifySessionId = "my-shopify-session-id"
-        const expires_in = 1000
 
-        mockedClerkSessions.getSession.mockResolvedValue({ userId } as Session)
-
-        await saveShopifySessionInfo(clerkSessionToken, store, shopifySessionId, expires_in)
+        await addStore(store, userId)
 
         const res = await listStores(userId)
         expect(res).toEqual([store])
@@ -31,21 +23,13 @@ describe("saveShopifySessionInfo", () => {
 
     it("should add new store info", async () => {
         const userId = "my-clerk-user-id"
-
-        const clerkSessionToken =
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2lkIjoibXktc2lkIiwiaWF0IjoxNTE2MjM5MDIyfQ.ol3RnXn0g_D1S9X-SeKM1VjStUU7vKzY2d0buYdtK_0"
-
         const store = "my-store.example.com"
-        const shopifySessionId = "my-shopify-session-id"
-        const expires_in = 1000
 
-        mockedClerkSessions.getSession.mockResolvedValue({ userId } as Session)
-
-        await saveShopifySessionInfo(clerkSessionToken, store, shopifySessionId, expires_in)
+        await addStore(store, userId)
 
         const newStore = "my-new-store.example.com"
         const newShopifySessionId = "my-new-shopify-session-id"
-        await saveShopifySessionInfo(clerkSessionToken, newStore, newShopifySessionId, expires_in)
+        await addStore(newStore, userId, newShopifySessionId)
 
         const res = await listStores(userId)
         expect(res).toEqual([store, newStore])
@@ -55,17 +39,9 @@ describe("saveShopifySessionInfo", () => {
 describe("deleteStore", () => {
     it("should delete store info", async () => {
         const userId = "my-clerk-user-id"
-
-        const clerkSessionToken =
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2lkIjoibXktc2lkIiwiaWF0IjoxNTE2MjM5MDIyfQ.ol3RnXn0g_D1S9X-SeKM1VjStUU7vKzY2d0buYdtK_0"
-
         const store = "my-store.example.com"
-        const shopifySessionId = "my-shopify-session-id"
-        const expires_in = 1000
 
-        mockedClerkSessions.getSession.mockResolvedValue({ userId } as Session)
-
-        await saveShopifySessionInfo(clerkSessionToken, store, shopifySessionId, expires_in)
+        await addStore(store, userId)
 
         await deleteStore(store)
 
