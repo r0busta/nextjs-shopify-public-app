@@ -2,7 +2,7 @@ import Redis from "ioredis"
 import * as redis from "./redis"
 import { sessionsApi as clerkSessionsApi } from "./clerk"
 import { parseJwt } from "./token"
-import { getSessionStorage } from "./session"
+import { getSessionStorage as getShopifySessionStorage } from "./session"
 
 class StoreUsersStorage {
     private client: Redis
@@ -174,7 +174,7 @@ class StoreService {
             return undefined
         }
 
-        const currentSession = await getSessionStorage().loadSession(sessionId)
+        const currentSession = await getShopifySessionStorage().loadSession(sessionId)
         if (!currentSession || !currentSession.expires || currentSession.expires.getTime() < Date.now()) {
             console.error("No Shopify session found or session expired for user ${userId} and store ${store}")
             return undefined
@@ -190,15 +190,14 @@ class StoreService {
     async deleteStore(store: string): Promise<boolean> {
         const userIds = await this.storeUsersStorage.list(store)
         if (userIds && userIds.length > 0) {
-            const sessionIds = await this.storeSessionStorage.listByStore(userIds, store)
-
-            if (sessionIds && sessionIds.length > 0) {
-                for (const sessionId of sessionIds) {
-                    await getSessionStorage().deleteSession(sessionId)
-                }
-            }
-
             await this.storeSessionStorage.deleteAll(userIds, store)
+        }
+
+        const sessionIds = await getShopifySessionStorage().listByStore(store)
+        if (sessionIds && sessionIds.length > 0) {
+            for (const sessionId of sessionIds) {
+                await getShopifySessionStorage().deleteSession(sessionId)
+            }
         }
 
         return this.storeUsersStorage.delete(store)

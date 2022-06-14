@@ -1,4 +1,5 @@
 import { deleteStore, listStores } from "src/lib/storage"
+import { getSession, shouldSaveSession } from "src/test/storage/shopify"
 import { addStore } from "src/test/storage/store"
 
 jest.mock("@clerk/clerk-sdk-node")
@@ -50,14 +51,28 @@ describe("deleteStore", () => {
     })
 
     it("should delete Shopify sessions", async () => {
-        const userId = "my-clerk-user-id"
-        const store = "my-store.example.com"
+        const store1 = "my-store-1.example.com"
+        const store2 = "my-store-2.example.com"
 
-        await addStore(store, userId)
+        const userId1 = "my-clerk-user-id-1"
+        const userId2 = "my-clerk-user-id-2"
 
-        await deleteStore(store)
+        const shopifySessionId1 = "my-user-1-shopify-session-id-1"
+        const shopifySessionId2 = "my-user-1-shopify-session-id-2"
+        const shopifySessionId3 = "my-user-2-shopify-session-id-1"
 
-        const res = await listStores(userId)
-        expect(res).toEqual([])
+        await addStore(store1, userId1, shopifySessionId1)
+        await shouldSaveSession(shopifySessionId1, store1)
+
+        await addStore(store2, userId2, shopifySessionId3)
+        await shouldSaveSession(shopifySessionId3, store2)
+
+        await shouldSaveSession(shopifySessionId2, store1)
+
+        await deleteStore(store1)
+
+        expect(await getSession(shopifySessionId1)).toBeUndefined()
+        expect(await getSession(shopifySessionId2)).toBeUndefined()
+        expect(await getSession(shopifySessionId3)).toBeDefined()
     })
 })

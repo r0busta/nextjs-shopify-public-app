@@ -45,6 +45,27 @@ class ShopifySessionStorage implements SessionStorage {
         )
     }
 
+    listByStore(store: string): Promise<string[] | undefined> {
+        return this.client.keys(this.key("*")).then(
+            async (v) => {
+                const res = []
+                for (const key of v) {
+                    const val = await this.client.get(key)
+                    if (!val) continue
+
+                    const sess = this.parse(val)
+                    if (!sess) continue
+                    if (sess.shop === store) res.push(sess.id)
+                }
+                return res
+            },
+            (e) => {
+                console.error(e)
+                return undefined
+            }
+        )
+    }
+
     private parse(v: string | null): SessionInterface | undefined {
         if (!v) return
 
