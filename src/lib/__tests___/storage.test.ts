@@ -48,4 +48,16 @@ describe("deleteStore", () => {
         const res = await listStores(userId)
         expect(res).toEqual([])
     })
+
+    it("should delete Shopify sessions", async () => {
+        const userId = "my-clerk-user-id"
+        const store = "my-store.example.com"
+
+        await addStore(store, userId)
+
+        await deleteStore(store)
+
+        const res = await listStores(userId)
+        expect(res).toEqual([])
+    })
 })

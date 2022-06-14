@@ -4,6 +4,9 @@ import { Session, sessions as clerkSessions } from "@clerk/clerk-sdk-node"
 jest.mock("@clerk/clerk-sdk-node")
 const mockedClerkSessions = clerkSessions as jest.Mocked<typeof clerkSessions>
 
+const Redis = require("ioredis-mock")
+jest.mock("ioredis", () => require("ioredis-mock"))
+
 export async function addStore(
     store: string,
     userId: string = "my-clerk-user-id",
@@ -20,4 +23,18 @@ export async function addStore(
     } catch (e) {
         throw e
     }
+}
+
+export async function listAllStoreKeys() {
+    const client = new Redis()
+    const res = client.keys("User.Stores.*")
+
+    return res
+}
+
+export async function listAllStoreSessionKeys() {
+    const client = new Redis()
+    const res = client.keys("User.StoreSessions.*")
+
+    return res
 }

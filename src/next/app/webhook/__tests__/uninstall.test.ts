@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next/types"
 import { createServer, listen, close } from "src/test/http/server"
 import fetch from "node-fetch"
 import webhookUninstallHandler from "../uninstall"
-import { addStore } from "src/test/storage/store"
+import { addStore, listAllStoreKeys, listAllStoreSessionKeys } from "src/test/storage/store"
 
 jest.mock("@clerk/clerk-sdk-node")
 
@@ -12,20 +12,6 @@ jest.mock("ioredis", () => require("ioredis-mock"))
 beforeEach(async () => {
     await new Redis().flushall()
 })
-
-const listAllStoreKeys = async () => {
-    const client = new Redis()
-    const res = client.keys("User.Stores.*")
-
-    return res
-}
-
-const listAllStoreSessionKeys = async () => {
-    const client = new Redis()
-    const res = client.keys("User.StoreSessions.*")
-
-    return res
-}
 
 describe("webhookUninstallHandler", () => {
     it("should require store domain header", async () => {
