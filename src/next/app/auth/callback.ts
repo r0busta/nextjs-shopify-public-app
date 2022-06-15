@@ -49,10 +49,15 @@ export default async function authCallbackHandler(req: NextApiRequest, res: Next
             return
         }
 
-        if (!hasScopes(currentSession, (process.env.SCOPES || "").split(","))) {
-            console.error(`User ${currentSession.id} doesn't have the required scopes.`)
+        const ms = missingScopes(currentSession, (process.env.SCOPES || "").split(","))
+        if (ms.length > 0) {
+            console.error(`User ${currentSession.id} lacks the following scopes: ${ms.join(", ")}`)
             res.writeHead(403)
-            res.end("Unauthorized")
+            res.end(
+                `Unauthorized. You lack the required scopes. Please ask the store owner to grant you the following scopes: ${ms.join(
+                    ", "
+                )}`
+            )
             return
         }
 
@@ -71,11 +76,12 @@ export default async function authCallbackHandler(req: NextApiRequest, res: Next
     }
 }
 
-function hasScopes(currentSession: ShopifySession, scopes: string[]): boolean {
+export function missingScopes(currentSession: ShopifySession, requiredScopes: string[]): string[] {
     if (!currentSession.onlineAccessInfo) {
-        return false
+        return []
     }
 
     const userScopes = currentSession.onlineAccessInfo.associated_user_scope.split(",")
-    return userScopes.every((scope) => scopes.includes(scope))
+    const diff = requiredScopes.filter((scope) => !userScopes.includes(scope))
+    return diff
 }
