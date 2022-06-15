@@ -54,7 +54,7 @@ export default async function authCallbackHandler(req: NextApiRequest, res: Next
             console.error(`User ${currentSession.id} lacks the following scopes: ${ms.join(", ")}`)
             res.writeHead(403)
             res.end(
-                `Unauthorized. You lack the required scopes. Please ask the store owner to grant you the following scopes: ${ms.join(
+                `Unauthorized. You lack the required permissions. Please ask the store owner to grant you the following permissions via the Shopify admin: ${ms.join(
                     ", "
                 )}`
             )
