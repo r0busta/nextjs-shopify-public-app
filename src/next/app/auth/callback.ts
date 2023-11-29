@@ -15,6 +15,10 @@ async function afterAuth(req: NextApiRequest, _: NextApiResponse, currentSession
 
     try {
         const clerkSessionToken = req.cookies["__session"]
+        if (!clerkSessionToken) {
+            throw new Error("No clerk session token")
+        }
+
         await saveShopifySessionInfo(clerkSessionToken, store, id, onlineAccessInfo?.expires_in)
     } catch (e) {
         console.error(`Couldn't save store info: ${e}`)
